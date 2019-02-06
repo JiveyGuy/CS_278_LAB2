@@ -1,14 +1,10 @@
-import java.util.Scanner;
-
 class Task2{
   
   public static boolean[] p;
   public static boolean[] q;
   
   public static void main(String args[]){
-    Scanner input = new Scanner(System.in);
-    System.out.print(" Array x dimension of p and q:  ");
-    model( Integer.parseInt(input.nextLine()));
+    model( args[0] );
   }
   
   public static void model( int numOfModels ){
@@ -20,25 +16,16 @@ class Task2{
         if( W() ) {
           System.out.print( "model found at ("+p_count+","+q_count+"):\np =\t");
           for(boolean itor : p)
-            System.out.print( itor ? "0 " : "1 ");
+            System.out.print( itor ? "0" : "1");
           System.out.print("\nq =\t");
           for( boolean itor : q )
-            System.out.print( itor ? "0 " : "1 " );
+            System.out.print( itor ? "0" : "1" );
           System.out.println();
-        } else {
-          System.out.print( "counter model found at ("+p_count+","+q_count+"):\np =\t");
-          for(boolean itor : p)
-            System.out.print( itor ? "0 " : "1 ");
-          System.out.print("\nq =\t");
-          for( boolean itor : q )
-            System.out.print( itor ? "0 " : "1 " );
-          System.out.println(); 
-        }
+        } 
       }
     }
   }
-  
-  
+//  
 //  public static boolean[] counterModel( int models ){
 //    
 //  }
@@ -58,7 +45,7 @@ class Task2{
     for( int count = 0; count < definitions.length; count++){
       
       char[] countBin = Integer.toBinaryString( count ).toCharArray();
-      
+
       for( int y = 0; y < countBin.length; y++ ){
         definitions[ count ][ exponent - 1 - y] = countBin[ countBin.length - y - 1] == 49;
       }
@@ -104,7 +91,7 @@ class Task2{
   
   public static boolean f4(){
     boolean result = true;
-    for( int x = 0; x < q.length; x++){
+    for( int x = 0; x < p.length; x++){
       result = result && q( x );
     }
     return result;
