@@ -1,11 +1,140 @@
+import java.util.Scanner;
+
 class Task2{
+  public static void main(String args[]){
+    Part2.generate2Dim(4);
+    Part2.model(4);
+  }
+}
+
+class Part2{
   
+  public static int len;
+  public static boolean[][] allModels;
+  public static boolean[][][] allModels2Dim;
+  public static boolean[] P;
+  public static boolean[][] Q;
+  
+  public static void model( int lenin ){
+    len = lenin * 2;
+    allModels = doubleModels( lenin );
+    System.out.println( "All models len = "+allModels.length );
+//    int size = allModels.length;
+//    for( int P_count = 0; P_count < size; P_count++){
+//      P = allModels[ P_count ];
+//      Q = allModels;
+//      for( int Q_x_count = 0; Q_x_count < size; Q_x_count++){
+//        for( int Q_y_count = 0; Q_y_count < len/4; Q_y_count++){
+//          if( W() ) isModel(P_count, Q_x_count, Q_y_count); else isNotModel(P_count, Q_x_count, Q_y_count);
+//        }
+//      }
+//    }
+    
+  }
+  
+  public static boolean[][] doubleModels(int len){
+    boolean[][] temp_models = generate( (int)Math.pow( 2, len) );
+    return temp_models;
+  }
+  
+  public static void isModel( int p, int qx, int qy ){
+    System.out.println("Model found at P["+p+"] Q["+qx+"]["+qy+"]: \n\tP="+P(p)+"\n\tQ={ {"+Q(qx, qy)+"} , {"+Q(qx, qy)+"} }");
+  }
+  
+  public static void isNotModel( int p, int qx, int qy ){
+    System.out.println("Counter Model found at P["+p+"] Q["+qx+"]["+qy+"]: \n\tP="+P(p)+"\n\tQ={ {"+Q(qx, qy)+"} , {"+Q(qx, qy)+"} }");
+  }
+  
+  public static boolean W(){
+    return imply( f1(), f2() );
+  }
+  
+  public static boolean f1(){
+    return f3() && f4();
+  }
+  
+  public static boolean f2(){
+    boolean result = true;
+    for( int x = 0; x < P.length; x++)
+      result = result && f5(x);
+    return result;
+  }
+  
+  public static boolean f3(){
+    boolean result = true;
+    for( int x = 0; x < P.length; x++)
+      result = result && f5(x);
+    return result;
+  }
+  
+  public static boolean f4(){
+    boolean result = true;
+    for( int x = 0; x < P.length; x++)
+      result = result && Q( x, x);
+    return result;
+  }
+  
+  public static boolean f5(int x){
+    return imply( P(x) , f6(x) );
+  }
+  
+  public static boolean f6(int x){
+    boolean result = true;
+    for( int y = 0; y < P.length; y++)
+      result = result && f7( x, y );
+    return true;
+  }
+  
+  public static boolean f7( int x, int y ){
+    return imply( Q(x, y) , Q(y, x) );
+  }
+  
+  public static boolean imply( boolean a, boolean b){
+    return !a || b; 
+  }
+  
+  public static boolean P( int x ){
+    return P[ x ];
+  }
+  
+  public static boolean Q( int x, int y ){
+    return Q[ x][y ];
+  }
+  
+  public static void generate2Dim( int len ){
+    int len_prime = (int)Math.pow( 2, (len+len-1));
+    boolean[][] all_models_temp = generate( len_prime );
+    System.out.println( "all_temp len = " + all_models_temp.length);
+//    boolean[][][] result = new boolean[all_models_temp][][];
+//    for( int x = 0; x < all_models_temp.length; x++)
+//      result[x]
+//    return result;
+  }
+  
+  public static boolean[][] generate( int models ){
+    int exponent = Integer.toBinaryString( models ).length();
+    boolean[][] definitions = new boolean[(int)Math.pow(2, exponent)][exponent];
+    for( int count = 0; count < definitions.length; count++){
+      
+      char[] countBin = Integer.toBinaryString( count ).toCharArray();
+      
+      for( int y = 0; y < countBin.length; y++ ){
+        definitions[ count ][ exponent - 1 - y] = countBin[ countBin.length - y - 1] == 49;
+      }
+      
+    }
+    return definitions;
+  }
+  
+  public static void printModel( boolean[] a ){
+    for(boolean itor : a)
+      System.out.print( (( itor ) ? "1" : "0" ) +" ");
+  }
+}
+
+class Part1{
   public static boolean[] p;
   public static boolean[] q;
-  
-  public static void main(String args[]){
-    model( args[0] );
-  }
   
   public static void model( int numOfModels ){
     boolean [][] allModels = generate( numOfModels );
@@ -16,19 +145,23 @@ class Task2{
         if( W() ) {
           System.out.print( "model found at ("+p_count+","+q_count+"):\np =\t");
           for(boolean itor : p)
-            System.out.print( itor ? "0" : "1");
+            System.out.print( itor ? "0 " : "1 ");
           System.out.print("\nq =\t");
           for( boolean itor : q )
-            System.out.print( itor ? "0" : "1" );
+            System.out.print( itor ? "0 " : "1 " );
           System.out.println();
-        } 
+        } else {
+          System.out.print( "counter model found at ("+p_count+","+q_count+"):\np =\t");
+          for(boolean itor : p)
+            System.out.print( itor ? "0 " : "1 ");
+          System.out.print("\nq =\t");
+          for( boolean itor : q )
+            System.out.print( itor ? "0 " : "1 " );
+          System.out.println(); 
+        }
       }
     }
   }
-//  
-//  public static boolean[] counterModel( int models ){
-//    
-//  }
   
   public static void printArray( boolean[][] in ){
     for( boolean[] itor : in ){
@@ -45,7 +178,7 @@ class Task2{
     for( int count = 0; count < definitions.length; count++){
       
       char[] countBin = Integer.toBinaryString( count ).toCharArray();
-
+      
       for( int y = 0; y < countBin.length; y++ ){
         definitions[ count ][ exponent - 1 - y] = countBin[ countBin.length - y - 1] == 49;
       }
@@ -91,7 +224,7 @@ class Task2{
   
   public static boolean f4(){
     boolean result = true;
-    for( int x = 0; x < p.length; x++){
+    for( int x = 0; x < q.length; x++){
       result = result && q( x );
     }
     return result;
