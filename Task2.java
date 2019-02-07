@@ -1,71 +1,98 @@
+//Jason ivey 2019
 import java.util.Scanner;
+import java.util.ArrayList;
 
 class Task2{
+
+  /*
+    main brings the seperate part1 and part2 class together and helps with user input for dynamic output.
+    @param args command line args not used here  
+  */
   public static void main(String args[]){
-    Part2.model(Integer.parseInt( args[0] ));
+
+    Scanner input = new Scanner( System.in );
+
+    System.out.print( "TASK 2 CS 278 LAB 2 JASON IVEY\nFor part one input the value x so that this program will develop all posible models and counter models in the range [0, 2^x]"
+      +"\n(WARNING the number of outputs increases exponentially with x, values greater than 4 can result in console spam._\nx: " );
+    int len = input.nextInt();
+    System.out.println("\n---------------PART1---------------");
+    Part1.model( len );
+
+    System.out.print( "For part two input the value x so that this program will develop all posible models and counter models in the range [0, 2^x]"
+      +"\n(WARNING: this program only works over the domain 0, 2)\nx: " );
+    len = input.nextInt();
+    System.out.println("\n---------------PART2---------------");
+    Part2.model( len );
+
   }
 }
 
 class Part2{
+
   public static boolean[] P;
   public static boolean[][] Q;
-  public static int iterations;
-  public static int len;
-  public static final boolean DEBUG = false;
-  
-  public static void debug(String...input){
-    if(!DEBUG) return;
-    for( String itor : input )
-      System.out.println( itor );
-  }
-  
-  public static void model(int len){
+
+  /*
+  model finds all models and counter models
+  @param len the value of x for 2^x 
+  */
+  public static void model(int len){ 
    boolean[][] allModels = generate( (int)Math.pow(2, len) - 1);
    int size = allModels.length;
-   int iterations = (int)Math.pow(2, len);
-   len = len;
+
    System.out.println( );
    for(int x = 0; x < size; x++){
      P = allModels[x];
-     
+    
      for(int y = 0; y < size; y++){
        for(int z = 0; z < size; z++){
-         Q = new boolean[][]{ allModels[y] , allModels[z] };
-         if( W() )  isModel(x,y,z);
-         else isNotModel(x,y,z);
+         Q = new boolean[][]{ allModels[y] , allModels[z] }; //Does not work for values > 2, once I make an improved generate this can be resolved
+        if( W() ){
+          isModel(x,y,z);
+        } else {
+          isNotModel(x,y,z);
+        }
        }
      }
    }
   }
-  
+  /*
+  isModel prints result for case where W() == true
+  @param p location this set in p
+  @param qx x index of this set in q
+  @param qy y index of this set in q
+  */
   public static void isModel( int p, int qx, int qy ){
-    System.out.println("Model found at P["+p+"] Q["+qx+"]["+qy+"]: \n\tP=");
-    System.out.print("\t\t");
+    System.out.print("Model found at P["+p+"] Q["+qx+"]["+qy+"]: \n\tP = ");
     for(boolean itor : P)
       System.out.print( itor ? "1 " : "0 ");
-    System.out.print("\n\tQ = \n");
+    System.out.print("\n\tQ = ");
     for(boolean[] itor : Q){
-      System.out.print("\t\t");
       for(boolean itor2 : itor){
+
         System.out.print( itor2 ? "1 " : "0 ");
       }
-      System.out.println();
     }
+    System.out.println();
   }
   
+  /*
+  isNotModel prints result for case where W() == false
+  @param p location this set in p
+  @param qx x index of this set in q
+  @param qy y index of this set in q
+  */
   public static void isNotModel( int p, int qx, int qy ){
-    System.out.println("Counter model found at P["+p+"] Q["+qx+"]["+qy+"]: \n\tP=");
-    System.out.print("\t\t");
+    System.out.print("Counter model found at P["+p+"] Q["+qx+"]["+qy+"]: \n\tP = ");
     for(boolean itor : P)
       System.out.print( itor ? "1 " : "0 ");
-    System.out.print("\n\tQ = \n");
+    System.out.print("\n\tQ = ");
     for(boolean[] itor : Q){
-      System.out.print("\t\t");
       for(boolean itor2 : itor){
         System.out.print( itor2 ? "1 " : "0 ");
       }
-      System.out.println();
     }
+    System.out.println();
   }
   
   public static boolean W(){
@@ -77,50 +104,60 @@ class Part2{
   }
   
   public static boolean f2(){
-    for( int x = 0; x < len; x++)
+    for( int x = 0; x < P.length; x++)
       if( !f5(x) ) return false;
     return true;
   }
   
   public static boolean f3(){
-    for( int x = 0; x < len; x++)
-      if( !P(x)) return false;
+    for( int x = 0; x < P.length; x++)
+      if( !p(x) ) return false;
     return true;
   }
   
   public static boolean f4(){
-    for( int x = 0; x < len; x++)
-      if( !Q( x, x) ) return true;
-    return false;
+    for( int x = 0; x < P.length; x++)
+      if( !q( x, x) ) return false;
+    return true;
   }
   
   public static boolean f5(int x){
-    return imply( P(x) , f6(x) );
+    return imply( p(x) , f6(x) );
   }
   
   public static boolean f6(int x){
-    for( int y = 0; y < len; y++)
-     if( !f7( x, y )) return false;
+    for( int y = 0; y < P.length; y++){
+     if( !f7( x, y )){
+        return false;
+      }
+    }
 
     return true;
   }
   
   public static boolean f7( int x, int y ){
-    return imply( Q(x, y) , Q(y, x) );
+    return imply( q(x, y) , q(y, x) );
   }
   
+  /*
+   * Helper imply function
+   */
   public static boolean imply( boolean a, boolean b){
     return !a || b; 
   }
   
-  public static boolean P( int x ){
+  public static boolean p( int x ){
     return P[ x ];
   }
   
-  public static boolean Q( int x, int y ){
+  public static boolean q( int x, int y ){
     return Q[ x][y ];
   }
   
+
+  /*
+   * generates all posible combinations of booleans for an array width
+   */
   public static boolean[][] generate( int models ){
     int exponent = Integer.toBinaryString( models ).length();
     boolean[][] definitions = new boolean[(int)Math.pow(2, exponent)][exponent];
@@ -136,16 +173,16 @@ class Part2{
     return definitions;
   }
   
-  public static void printModel( boolean[] a ){
-    for(boolean itor : a)
-      System.out.print( (( itor ) ? "1" : "0" ) +" ");
-  }
 }
 
 class Part1{
   public static boolean[] p;
   public static boolean[] q;
   
+  /*
+  model finds all models and counter models
+  @param numOfModels the value of x for 2^x 
+  */
   public static void model( int numOfModels ){
     boolean [][] allModels = generate( numOfModels );
     for( int p_count = 0; p_count < allModels.length; p_count++){
@@ -155,33 +192,27 @@ class Part1{
         if( W() ) {
           System.out.print( "model found at ("+p_count+","+q_count+"):\np =\t");
           for(boolean itor : p)
-            System.out.print( itor ? "0 " : "1 ");
+            System.out.print( itor ? "1 " : "0 ");
           System.out.print("\nq =\t");
           for( boolean itor : q )
-            System.out.print( itor ? "0 " : "1 " );
+            System.out.print( itor ? "1 " : "0 " );
           System.out.println();
         } else {
           System.out.print( "counter model found at ("+p_count+","+q_count+"):\np =\t");
           for(boolean itor : p)
-            System.out.print( itor ? "0 " : "1 ");
+            System.out.print( itor ? "1 " : "0 ");
           System.out.print("\nq =\t");
           for( boolean itor : q )
-            System.out.print( itor ? "0 " : "1 " );
+            System.out.print( itor ? "1 " : "0 " );
           System.out.println(); 
         }
       }
     }
   }
   
-  public static void printArray( boolean[][] in ){
-    for( boolean[] itor : in ){
-      for( boolean val : itor){
-        System.out.print( (val ? 1 : 0) + " " );
-      }
-      System.out.println();
-    }
-  }
-  
+  /*
+   * generates all posible combinations of booleans for an array width
+   */
   public static boolean[][] generate( int models ){
     int exponent = Integer.toBinaryString( models ).length();
     boolean[][] definitions = new boolean[(int)Math.pow(2, exponent)][exponent];

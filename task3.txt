@@ -1,0 +1,17 @@
+! = not
+& = and
+| = or
+-> = imply
+== = logical equivalent
+
+Show that { [ !p & ( p | q ) ] -> q } is a tautology:
+
+	Steps = {
+
+	1:  [ !p &  ( p |  q ) ]  -> q  ==  !( !p &  ( p |  q ) )  |  q		//Due to example 3
+	2: ![ !p &  ( p |  q ) ]  |  q  ==      p | !( p |  q )    |  q		//Due to first De Morgan's law ![ !p & ( p | q ) ] == !!p | !( p | q ) == p | !( p | q )
+	3:     p | !( p |  q )    |  q  ==      p |   !p & !q      |  q 	//Due to second De Morgan's law !(p | q) == !p & !q
+	4:     p |   !p & !q      |  q  ==      T & T 						//Due to the commutative law for disjunction 
+	5:        T & T                 ==        T 						//Due to domination law  
+
+	}
